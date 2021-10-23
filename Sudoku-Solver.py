@@ -3,17 +3,17 @@ import sys
 """
     Our Sudoku Board looks like this!
        0  1  2   3  4  5   6  7  8
-    A [1  2  3 | 4  5  6 | 7  8  9],
-    B [1  2  3 | 4  5  6 | 7  8  9],
-    C [1  2  3 | 4  5  6 | 7  8  9],
+    1 [1  2  3 | 4  5  6 | 7  8  9],
+    2 [1  2  3 | 4  5  6 | 7  8  9],
+    3 [1  2  3 | 4  5  6 | 7  8  9],
       ---------|---------|---------
-    D [1  2  3 | 4  5  6 | 7  8  9],
-    E [1  2  3 | 4  5  6 | 7  8  9],
-    F [1  2  3 | 4  5  6 | 7  8  9],
+    4 [1  2  3 | 4  5  6 | 7  8  9],
+    5 [1  2  3 | 4  5  6 | 7  8  9],
+    6 [1  2  3 | 4  5  6 | 7  8  9],
       ---------|---------|---------
-    G [1  2  3 | 4  5  6 | 7  8  9],
-    H [1  2  3 | 4  5  6 | 7  8  9],
-    I [1  2  3 | 4  5  6 | 7  8  9]
+    7 [1  2  3 | 4  5  6 | 7  8  9],
+    8 [1  2  3 | 4  5  6 | 7  8  9],
+    9 [1  2  3 | 4  5  6 | 7  8  9]
 
     Grids:
         colums -->    
@@ -45,7 +45,7 @@ sudoku_board = [
 
 def get_numbers_in_row(sudoku_board:list[list], row:int) -> list:
     """
-        return the numbers in the row(for example A)
+        return the numbers in the row
     """
     ret = list()
     for colum in sudoku_board[row]:
@@ -55,6 +55,7 @@ def get_numbers_in_row(sudoku_board:list[list], row:int) -> list:
 
 def get_numbers_in_colum(sudoku_board:list[list], colum:int) -> list:
     """
+        returns the number in the specified colum
     """
     ret = list()
     for row in sudoku_board:
@@ -65,7 +66,7 @@ def get_numbers_in_colum(sudoku_board:list[list], colum:int) -> list:
 
 def get_numbers_in_grid(sudoku_board:list[list], begin_row:int, begin_colum:int) -> list:
     """
-        specify one point in the sudoku_board and the function will return the numbers set in this grid
+        specify one point in the sudoku_board and the function will return all the numbers in this grid
     """    
     while begin_row % 3 != 0:  # if the row is divideable by 3 we are at the first number of this grid
         begin_row -= 1
@@ -111,7 +112,7 @@ def check_sudoku_board(sudoku_board:list[list], ) -> bool:
 
 def check_duplicate_numbers(sudoku_board:list[list]) -> bool:
     """
-        checks only if there is a duplicate numbers in one row-colum or grid!
+        checks only if there is a duplicate numbers in one row-colum or grid! (if there are fore example 2 fives somewhere(in a row/colum/grid) - not solved correctly)
         Not if the board is full!!
         returns true if he doesnt found a duplicate number
     """
@@ -145,7 +146,7 @@ def check_duplicate_numbers(sudoku_board:list[list]) -> bool:
 
 def check_fully_filled(sudoku_board:list[list]) -> bool:
     """
-        checks if every field in the sudoku_board is up - if the board is entirely filled
+        checks if every field in the sudoku_board is filled up - if the board is entirely filled
     """
     for row in sudoku_board:
         for colum in row:
@@ -155,7 +156,8 @@ def check_fully_filled(sudoku_board:list[list]) -> bool:
 
 def solve_sudoku(sudoku_board:list[list]) -> bool:
     """
-        Returns if there is a solution for this board - if it could solve it
+        Returns true if there is a solution for this board - if it could solve it.
+        Otherwise false
     """
 
     if check_duplicate_numbers(sudoku_board) == True:
@@ -164,21 +166,7 @@ def solve_sudoku(sudoku_board:list[list]) -> bool:
         return check_sudoku_board(sudoku_board) # if the board is right, it will return true else false
 
 
-    """
-        this list stores at every position of the field the options, which could be filled in
-        this list looks like:
-        options_to_fill_in = [
-        
-        This is one position, were the options are stored in, we can which could be at this position
-                                                   |
-        [[options we can fill in],[1,2,3,4].[ ]],
-        [[],[],[]],
-         .
-         .
-         .
-        ]
-    """
-    options_to_fill_in = list()
+    options_to_fill_in = list() # options of numbers we can fill in(for the coordinate with the lowest most less options)
     all_options = [1, 2, 3, 4, 5, 6, 7, 8, 9]     # all the options which can be in one row/colum/grid
 
     """
@@ -199,7 +187,7 @@ def solve_sudoku(sudoku_board:list[list]) -> bool:
                 continue
 
             used_numbers = get_numbers_in_colum(sudoku_board, colum) + get_numbers_in_row(sudoku_board, row) + get_numbers_in_grid(sudoku_board, row, colum)
-            used_numbers = list(set(used_numbers)) # remove duplicates - we added the numbers in the row,colum and grid - there are maybe duplicates
+            used_numbers = list(set(used_numbers)) # remove duplicates - we added the numbers from row,colum and grid - there are maybe duplicates
             
             num_of_options = len(all_options) - len(used_numbers)
             if num_of_options < lowest_num_of_options:
@@ -207,7 +195,7 @@ def solve_sudoku(sudoku_board:list[list]) -> bool:
                 change_number_position_row   = row
 
                 for item in all_options:
-                    if item not in used_numbers:                # add the numbers, which are not in used_numbers, but in all_options
+                    if item not in used_numbers:     # add the numbers, which are not in used_numbers, but in all_options
                         options_to_fill_in.append(item)
 
                 lowest_num_of_options = num_of_options
