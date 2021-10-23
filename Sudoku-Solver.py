@@ -100,10 +100,6 @@ def check_sudoku_board() -> bool:
         for a in range(9):
             if row_nums[i] != i+1 or colum_nums[i] != i+1:
                 return False
-        #print(grid_nums)
-        #print(row_nums)
-        #print(colum_nums)
-        #print()
 
     for rows in range(0, 6 + 1, 3):   #checking the grids
         for colums in range(0, 6 + 1, 3):
@@ -169,29 +165,26 @@ def solve_sudoku(sudoku_board:list[list]) -> bool:
     if check_fully_filled(sudoku_board) == True:
         return check_sudoku_board() # if the board is right, it will return true else false
 
-    #board_backup = list()
-    #for row in sudoku_board:    # make a deep copy of the board
-    #    board_backup.append(row.copy())
 
     """
-        this list stores at every position of the field the posibillities, which could be filled in
+        this list stores at every position of the field the options, which could be filled in
         this list looks like:
-        posibillites_to_fill_in = [
+        options_to_fill_in = [
         
-        This is one position, were the posibillities are stored in, we can which could be at this position
+        This is one position, were the options are stored in, we can which could be at this position
                                                    |
-        [[posibilliteis we can fill in],[1,2,3,4].[ ]],
+        [[options we can fill in],[1,2,3,4].[ ]],
         [[],[],[]],
          .
          .
          .
         ]
     """
-    posibillities_to_fill_in = list()
-    all_posibillities = [1, 2, 3, 4, 5, 6, 7, 8, 9]     # all the possibillities which can be in one row/colum/grid
+    options_to_fill_in = list()
+    all_options = [1, 2, 3, 4, 5, 6, 7, 8, 9]     # all the options which can be in one row/colum/grid
 
     """
-        we change in this function call only one number(the number with the most less possibillities of numbers
+        we change in this function call only one number(the number with the most less options of numbers
         to fill in). The position(row and colum) of this number is stored in this two variables:
             change_number_position_row    - the row
             change_number_position_colum  - the colum
@@ -199,7 +192,7 @@ def solve_sudoku(sudoku_board:list[list]) -> bool:
     change_number_position_row   = 0
     change_number_position_colum = 0
 
-    lowest_num_of_possibilities = 10    # lowest num of possibillities on the whole board - this number we will change afterwards/set it
+    lowest_num_of_options = 10    # lowest num of options on the whole board - this number we will change afterwards/set it
 
 
     for row in range(len(sudoku_board)):    # parsing for numbers, we can fill in
@@ -210,20 +203,20 @@ def solve_sudoku(sudoku_board:list[list]) -> bool:
             used_numbers = get_numbers_in_colum(colum) + get_numbers_in_row(row) + get_numbers_in_grid(row, colum)
             used_numbers = list(set(used_numbers)) # remove duplicates - we added the numbers in the row,colum and grid - there are maybe duplicates
             
-            num_of_possibillities = len(all_posibillities) - len(used_numbers)
-            if num_of_possibillities < lowest_num_of_possibilities:
+            num_of_options = len(all_options) - len(used_numbers)
+            if num_of_options < lowest_num_of_options:
                 change_number_position_colum = colum
                 change_number_position_row   = row
 
-                for item in all_posibillities:
-                    if item not in used_numbers:                # add the numbers, which are not in used_numbers, but in all_posibillities
-                        posibillities_to_fill_in.append(item)
+                for item in all_options:
+                    if item not in used_numbers:                # add the numbers, which are not in used_numbers, but in all_options
+                        options_to_fill_in.append(item)
 
-                lowest_num_of_possibilities = num_of_possibillities
+                lowest_num_of_options = num_of_options
 
     
-    for possibillity in posibillities_to_fill_in:
-        sudoku_board[change_number_position_row][change_number_position_colum] = possibillity
+    for option in options_to_fill_in:
+        sudoku_board[change_number_position_row][change_number_position_colum] = option
         if solve_sudoku(sudoku_board) == True:
             return True
     
