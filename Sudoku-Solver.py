@@ -1,6 +1,4 @@
-import os
 import sys
-os.system("clear")
 
 """
     Our Sudoku Board looks like this!
