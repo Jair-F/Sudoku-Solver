@@ -187,51 +187,53 @@ def solve_sudoku(sudoku_board:list[list]) -> bool:
          .
         ]
     """
-    all_posibillities = [1, 2, 3, 4, 5, 6, 7, 8, 9]
     posibillities_to_fill_in = list()
-    lowest_num_of_possibilities = 10
+    all_posibillities = [1, 2, 3, 4, 5, 6, 7, 8, 9]     # all the possibillities which can be in one row/colum/grid
+
+    """
+        we change in this function call only one number(the number with the most less possibillities of numbers
+        to fill in). The position(row and colum) of this number is stored in this two variables:
+            change_number_position_row    - the row
+            change_number_position_colum  - the colum
+    """
+    change_number_position_row   = 0
+    change_number_position_colum = 0
+
+    lowest_num_of_possibilities = 10    # lowest num of possibillities on the whole board - this number we will change afterwards/set it
 
 
     for row in range(len(sudoku_board)):    # parsing for numbers, we can fill in
-        posibillities_to_fill_in.append(list()) # append an new row
         for colum in range(len(sudoku_board[row])):
-            posibillities_to_fill_in[row].append(list()) # append an new colum(as liste - there will the posibillies be stored in)
-
             if sudoku_board[row][colum] != None:    # if at this position there is already a number - continue - we dont can put in there a number
                 continue
 
             used_numbers = get_numbers_in_colum(colum) + get_numbers_in_row(row) + get_numbers_in_grid(row, colum)
-            #used_numbers = list(set(used_numbers)) # remove duplicates(not shure if we need this)
-            posibillities_to_fill_in[row][colum] = [item for item in all_posibillities if item not in used_numbers] # add the numbers, which are not in used_numbers, but in all_posibillities
+            used_numbers = list(set(used_numbers)) # remove duplicates - we added the numbers in the row,colum and grid - there are maybe duplicates
             
-            num_of_possibillities = len(posibillities_to_fill_in[row][colum])
+            num_of_possibillities = len(all_posibillities) - len(used_numbers)
             if num_of_possibillities < lowest_num_of_possibilities:
+                change_number_position_colum = colum
+                change_number_position_row   = row
+
+                for item in all_posibillities:
+                    if item not in used_numbers:                # add the numbers, which are not in used_numbers, but in all_posibillities
+                        posibillities_to_fill_in.append(item)
+
                 lowest_num_of_possibilities = num_of_possibillities
-            #print(row, ':', colum, ' ->', used_numbers, '-> possibillities: ', posibillities_to_fill_in[row][colum])
 
     
-    for row in range(len(sudoku_board)):    # filling in one number
-        for colum in range(len(sudoku_board[row])):
-            #if sudoku_board[row][colum] != None:   # if the field is already filled up
-            #    continue   # dont need that because ther arent posibillities - we sorted them out in the for section above
-            num_of_possibillities = len(posibillities_to_fill_in[row][colum])
-            if num_of_possibillities == lowest_num_of_possibilities:
-                for possibillity in posibillities_to_fill_in[row][colum]:
-                    sudoku_board[row][colum] = possibillity
-                    if solve_sudoku(sudoku_board) == True:
-                        return True
-                
-                # restore the actual position by setting it to None(because the board-function-paramter is given as reference)
-                sudoku_board[row][colum] = None
+    for possibillity in posibillities_to_fill_in:
+        sudoku_board[change_number_position_row][change_number_position_colum] = possibillity
+        if solve_sudoku(sudoku_board) == True:
+            return True
+    
 
-            # restore the board
-            #for i in range(len(board_backup)):    # restore old board
-            #    sudoku_board[i] = board_backup[i].copy()
-                return False
+    # we dont found a solution on this position - restore the actual position by setting it to None(because the board-function-paramter is given as reference)
+    sudoku_board[change_number_position_row][change_number_position_colum] = None
     return False
 
 
-def print_board():
+def print_board(sudoku_board:list[list]):
     print("-------------------------")
     for row in range(len(sudoku_board)):
         print(f"|{sudoku_board[row][0]}  {sudoku_board[row][1]}  {sudoku_board[row][2]}|{sudoku_board[row][3]}  {sudoku_board[row][4]}  {sudoku_board[row][5]}|{sudoku_board[row][6]}  {sudoku_board[row][7]}  {sudoku_board[row][8]}|".replace("None", ' '))
@@ -251,7 +253,7 @@ if __name__ == "__main__":
                 sudoku_board[row][i] = int(nums[i]) if nums[i] != '' else None
             row += 1
     
-    print_board()
+    print_board(sudoku_board)
     print()
 
     if solve_sudoku(sudoku_board) == True:
@@ -259,4 +261,4 @@ if __name__ == "__main__":
     else:
         print("doesnt solved board!!")
     
-    print_board()
+    print_board(sudoku_board)
