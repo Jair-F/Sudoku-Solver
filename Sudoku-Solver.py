@@ -68,11 +68,9 @@ def get_numbers_in_grid(sudoku_board:list[list], begin_row:int, begin_colum:int)
     """
         specify one point in the sudoku_board and the function will return all the numbers in this grid
     """    
-    while begin_row % 3 != 0:  # if the row is divideable by 3 we are at the first number of this grid
-        begin_row -= 1
-    
-    while begin_colum % 3 != 0:  # if the colum is divideable by 3 we are at the first number of this grid
-        begin_colum -= 1
+    # seek to the left upper corner of the grid - our reference for getting the numbers in grid
+    begin_row = begin_row - begin_row % 3   
+    begin_colum = begin_colum - begin_colum % 3
     
     ret = list()
     for row in range(3):
