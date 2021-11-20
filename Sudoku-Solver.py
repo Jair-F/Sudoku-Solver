@@ -114,7 +114,7 @@ def check_duplicate_numbers(sudoku_board:list[list]) -> bool:
     """
         checks only if there is a duplicate numbers in one row-colum or grid! (if there are fore example 2 fives somewhere(in a row/colum/grid) - not solved correctly)
         Not if the board is full!!
-        returns true if he doesnt found a duplicate number
+        returns true if he found a duplicate number
     """
     row_nums   = list
     colum_nums = list
