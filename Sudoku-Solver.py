@@ -201,7 +201,7 @@ def solve_sudoku(sudoku_board:list[list]) -> bool:
                 lowest_num_of_options = num_of_options
 
     
-    for option in options_to_fill_in:
+    for option in options_to_fill_in:   # filling in the number - cycle through the options
         sudoku_board[change_number_position_row][change_number_position_colum] = option
         if solve_sudoku(sudoku_board) == True:
             return True
