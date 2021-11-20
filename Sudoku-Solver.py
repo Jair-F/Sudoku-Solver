@@ -97,7 +97,7 @@ def check_sudoku_board(sudoku_board:list[list], ) -> bool:
             return False
 
         for a in range(9):
-            if row_nums[i] != i+1 or colum_nums[i] != i+1:
+            if row_nums[a] != a+1 or colum_nums[a] != a+1:
                 return False
 
     for rows in range(0, 6 + 1, 3):   #checking the grids
@@ -106,7 +106,7 @@ def check_sudoku_board(sudoku_board:list[list], ) -> bool:
             grid_nums.sort()
 
             for a in range(9):
-                if grid_nums[i] != i+1:
+                if grid_nums[a] != a+1:
                     return False
     return True
 
