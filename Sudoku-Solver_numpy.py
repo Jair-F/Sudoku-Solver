@@ -1,4 +1,5 @@
 import sys
+import numpy as np
 
 """
     Our Sudoku Board looks like this!
@@ -31,40 +32,40 @@ rows   0  1  2   3  4  5   6  7  8
     8 [        |         |        ]
 """
 
-sudoku_board = [
-    [None, None, None, None, None, None, None, None, None],
-    [None, None, None, None, None, None, None, None, None],
-    [None, None, None, None, None, None, None, None, None],
-    [None, None, None, None, None, None, None, None, None],
-    [None, None, None, None, None, None, None, None, None],
-    [None, None, None, None, None, None, None, None, None],
-    [None, None, None, None, None, None, None, None, None],
-    [None, None, None, None, None, None, None, None, None],
-    [None, None, None, None, None, None, None, None, None]
-]
+# sudoku_board = [
+#     [None, None, None, None, None, None, None, None, None],
+#     [None, None, None, None, None, None, None, None, None],
+#     [None, None, None, None, None, None, None, None, None],
+#     [None, None, None, None, None, None, None, None, None],
+#     [None, None, None, None, None, None, None, None, None],
+#     [None, None, None, None, None, None, None, None, None],
+#     [None, None, None, None, None, None, None, None, None],
+#     [None, None, None, None, None, None, None, None, None],
+#     [None, None, None, None, None, None, None, None, None]
+# ]
 
-def get_numbers_in_row(sudoku_board:list[list], row:int) -> list:
+def get_numbers_in_row(sudoku_board:np.array, row:int) -> list:
     """
         return the numbers in the row
     """
     ret = list()
     for colum in sudoku_board[row]:
-        if colum != None:
+        if colum != ' ':
             ret.append(colum)
     return ret
 
-def get_numbers_in_colum(sudoku_board:list[list], colum:int) -> list:
+def get_numbers_in_colum(sudoku_board:np.array, colum:int) -> list:
     """
         returns the number in the specified colum
     """
     ret = list()
     for row in sudoku_board:
         grid = row[colum]
-        if grid != None:
+        if grid != ' ':
             ret.append(grid)
     return ret
 
-def get_numbers_in_grid(sudoku_board:list[list], begin_row:int, begin_colum:int) -> list:
+def get_numbers_in_grid(sudoku_board:np.array, begin_row:int, begin_colum:int) -> list:
     """
         specify one point in the sudoku_board and the function will return all the numbers in this grid
     """    
@@ -76,11 +77,11 @@ def get_numbers_in_grid(sudoku_board:list[list], begin_row:int, begin_colum:int)
     for row in range(3):
         for colum in range(3):
             num = sudoku_board[begin_row + row][begin_colum + colum]
-            if num != None:
+            if num != ' ':
                 ret.append(num)
     return ret
 
-def check_sudoku_board(sudoku_board:list[list], ) -> bool:
+def check_sudoku_board(sudoku_board:np.array) -> bool:
     """
         returns true if the board is fully solved!
     """
@@ -95,7 +96,7 @@ def check_sudoku_board(sudoku_board:list[list], ) -> bool:
             return False
 
         for a in range(9):
-            if row_nums[a] != a+1 or colum_nums[a] != a+1:
+            if row_nums[a] != str(a+1) or colum_nums[a] != str(a+1):
                 return False
 
     for rows in range(0, 6 + 1, 3):   #checking the grids
@@ -104,11 +105,11 @@ def check_sudoku_board(sudoku_board:list[list], ) -> bool:
             grid_nums.sort()
 
             for a in range(9):
-                if grid_nums[a] != a+1:
+                if grid_nums[a] != str(a+1):
                     return False
     return True
 
-def check_duplicate_numbers(sudoku_board:list[list]) -> bool:
+def check_duplicate_numbers(sudoku_board:np.array) -> bool:
     """
         checks only if there is a duplicate numbers in one row-colum or grid! (if there are fore example 2 fives somewhere(in a row/colum/grid) - not solved correctly)
         Not if the board is full!!
@@ -142,21 +143,23 @@ def check_duplicate_numbers(sudoku_board:list[list]) -> bool:
     
     return False
 
-def check_fully_filled(sudoku_board:list[list]) -> bool:
+def check_fully_filled(sudoku_board:np.array) -> bool:
     """
         checks if every field in the sudoku_board is filled up - if the board is entirely filled
     """
     for row in sudoku_board:
         for colum in row:
-            if colum == None:
+            if colum == ' ':
                 return False
     return True
 
-def solve_sudoku(sudoku_board:list[list]) -> bool:
+def solve_sudoku(sudoku_board:np.array) -> bool:
     """
         Returns true if there is a solution for this board - if it could solve it.
         Otherwise false
     """
+    if sudoku_board.ndim != 2:
+        return False
 
     if check_duplicate_numbers(sudoku_board) == True:
         return False
@@ -165,7 +168,7 @@ def solve_sudoku(sudoku_board:list[list]) -> bool:
 
 
     options_to_fill_in = list() # options of numbers we can fill in(for the coordinate with the lowest most less options)
-    all_options = [1, 2, 3, 4, 5, 6, 7, 8, 9]     # all the options which can be in one row/colum/grid
+    all_options = ['1', '2', '3', '4', '5', '6', '7', '8', '9']     # all the options which can be in one row/colum/grid
 
     """
         we change in this function call only one number(the number with the most less options of numbers
@@ -181,7 +184,7 @@ def solve_sudoku(sudoku_board:list[list]) -> bool:
 
     for row in range(len(sudoku_board)):    # parsing for numbers, we can fill in
         for colum in range(len(sudoku_board[row])):
-            if sudoku_board[row][colum] != None:    # if at this position there is already a number - continue - we dont can put in there a number
+            if sudoku_board[row][colum] != ' ':    # if at this position there is already a number - continue - we dont can put in there a number
                 continue
 
             used_numbers = get_numbers_in_colum(sudoku_board, colum) + get_numbers_in_row(sudoku_board, row) + get_numbers_in_grid(sudoku_board, row, colum)
@@ -192,13 +195,14 @@ def solve_sudoku(sudoku_board:list[list]) -> bool:
                 change_number_position_colum = colum
                 change_number_position_row   = row
 
+                options_to_fill_in.clear()
                 for item in all_options:
                     if item not in used_numbers:     # add the numbers, which are not in used_numbers, but in all_options
                         options_to_fill_in.append(item)
 
                 lowest_num_of_options = num_of_options
 
-    
+
     for option in options_to_fill_in:   # filling in the number - cycle through the options
         sudoku_board[change_number_position_row][change_number_position_colum] = option
         if solve_sudoku(sudoku_board) == True:
@@ -206,11 +210,21 @@ def solve_sudoku(sudoku_board:list[list]) -> bool:
     
 
     # we dont found a solution on this position - restore the actual position by setting it to None(because the board-function-paramter is given as reference)
-    sudoku_board[change_number_position_row][change_number_position_colum] = None
+    sudoku_board[change_number_position_row][change_number_position_colum] = ' '
     return False
 
 
-def print_board(sudoku_board:list[list]):
+def print_board(sudoku_board:np.array):
+    print("-------------------------")
+    for row in range(len(sudoku_board)):
+        print(f"|{sudoku_board[row][0]}  {sudoku_board[row][1]}  {sudoku_board[row][2]}|{sudoku_board[row][3]}  {sudoku_board[row][4]}  {sudoku_board[row][5]}|{sudoku_board[row][6]}  {sudoku_board[row][7]}  {sudoku_board[row][8]}|".replace("None", ' '))
+        if (row+1) % 3 == 0:
+            print("-------------------------")
+
+def print_board(sudoku_board:np.array):
+    if sudoku_board.ndim != 2:
+        return 0 # need to be 2 dimensional
+
     print("-------------------------")
     for row in range(len(sudoku_board)):
         print(f"|{sudoku_board[row][0]}  {sudoku_board[row][1]}  {sudoku_board[row][2]}|{sudoku_board[row][3]}  {sudoku_board[row][4]}  {sudoku_board[row][5]}|{sudoku_board[row][6]}  {sudoku_board[row][7]}  {sudoku_board[row][8]}|".replace("None", ' '))
@@ -219,8 +233,13 @@ def print_board(sudoku_board:list[list]):
 
 
 if __name__ == "__main__":
+    #board = np.array([[]], dtype=int, ndmin=2)
+    sudoku_board = np.zeros((9,9), dtype=str) # negative numbers are unset placeholders
+    #print_board(sudoku_board)
+
     #input_board = input("File with sudoku_board: ")
     input_board = sys.argv[1] # first passed argument
+    print(input_board)
     with open(input_board, "r") as file:
         row = 0
         for line in file:
@@ -228,7 +247,7 @@ if __name__ == "__main__":
             line = line.replace(' ', '')
             nums = line.split(',')
             for i in range(len(nums)):
-                sudoku_board[row][i] = int(nums[i]) if nums[i] != '' else None
+                sudoku_board[row][i] = nums[i] if nums[i] != '' else ' '
             row += 1
     
     print_board(sudoku_board)
